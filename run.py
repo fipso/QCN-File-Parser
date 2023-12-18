@@ -43,7 +43,7 @@ while pos < len(data) - 4:
 for nv in nvs:
     if nv["id"] == NV_ID_ESN:
         field = data[nv["offset"]:nv["offset"]+4]
-        print(f"[{hex(nv['offset'])}] ESN", nv, field[::-1].hex())  
+        print(f"[{hex(nv['offset'])}] ESN", nv, field[::-1].hex())
 
     if nv["id"] == NV_ID_IMEI:
         field = data[nv["offset"]:nv["offset"]+9]
@@ -53,27 +53,7 @@ for nv in nvs:
         print(f"[{hex(nv['offset'])}] IMEI", nv, final)  
 
     if nv["id"] == NV_ID_MEID:
-        field = data[nv["offset"]:nv["offset"]+9]
-
-        start = 6
-        size = 7
-        if field[4] == 0x5d:
-            start = 7
-            size = 8
-
-        final = f"{int.from_bytes([size])}"
-
-        i = start
-        while i > 0:
-            i -= 1
-
-            if field[i] == 0x5d:
-                # print("skip")
-                continue
-
-            n = str(int.from_bytes([field[i]])) 
-            # print(field[i],n)
-            final += n
-
-        print(f"[{hex(nv['offset'])}] MEID (probably wrong)", nv, final)  
-
+        field = data[nv["offset"]:nv["offset"]+7]
+        meid = field.hex()
+        meid = ''.join(reversed([meid[i:i+2] for i in range(0, len(meid), 2)])) # Reverse byte order
+        print(f"[{hex(nv['offset'])}] MEID", nv, meid)
